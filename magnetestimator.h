@@ -8,10 +8,16 @@ class MagnetEstimator
 {
 public:
     MagnetEstimator(int n);
+    void inititialize();
+    void setData(float data[][3]);
+    void estimate();
 private:
-    int numberOfSensors;
-    QVector<Matrix3f> rot_mat;
+    int numberOfSensor;
+    QVector<Matrix3f> rotMat;
     QVector<Vector3f> pos;
+    MatrixXf magneticData;
+    Vector3f magnetPosition;
+    Vector3f magnetDirection;
 };
 
 #endif // MAGNETESTIMATOR_H

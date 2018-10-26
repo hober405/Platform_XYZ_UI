@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include "manager3d.h"
+#include "magnetestimator.h"
 #include <QMainWindow>
 #include <QtSerialPort/QtSerialPort>
 #include <QKeyEvent>
@@ -15,6 +16,7 @@
 namespace Ui {
 class MainWindow;
 }
+
 enum Direction{ UP, DOWN, LEFT, RIGHT, FORWARD, BACKWARD};
 enum MagnetometersSelection{
     M1 = 0x001,
@@ -101,6 +103,7 @@ private:
     void gotoXYZ(int x, int y, int z);
     void patternRecord();
     void stopPatternRecord();
+
     Ui::MainWindow *ui;
     QSerialPort *serial;
     EnvelopeTracker tracker;
@@ -120,6 +123,8 @@ private:
     bool isNext;
 
     char magSelection;
+    MagnetEstimator estimater;
+    float magData[8][3];
 };
 
 #endif // MAINWINDOW_H

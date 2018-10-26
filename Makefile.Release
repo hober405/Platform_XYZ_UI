@@ -14,7 +14,7 @@ CXX           = g++
 DEFINES       = -DUNICODE -DQT_QML_DEBUG -DQT_NO_DEBUG -DQT_3DRENDER_LIB -DQT_3DINPUT_LIB -DQT_3DCORE_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SERIALPORT_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN
 CFLAGS        = -pipe -fno-keep-inline-dllexport -O2 -Wall -Wextra $(DEFINES)
 CXXFLAGS      = -pipe -fno-keep-inline-dllexport -O2 -std=gnu++0x -frtti -Wall -Wextra -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I. -I"C:/Program Files/MATLAB/R2016b/extern/include" -I../../Qt/Qt5.6.2/5.6/mingw49_32/include -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DInput -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DCore -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtANGLE -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtSerialPort -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore -Irelease -I. -I../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++ 
+INCPATH       = -I. -I"../../Program Files/eigen" -I../../Qt/Qt5.6.2/5.6/mingw49_32/include -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DInput -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DCore -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtANGLE -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtSerialPort -I../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore -Irelease -I. -I../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -Wl,-s -Wl,-subsystem,windows -mthreads
 LIBS        =        -lmingw32 -LD:/Qt/Qt5.6.2/5.6/mingw49_32/lib D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libqtmain.a -lshell32 D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt5Core.a -LC:/utils/my_sql/my_sql/lib -LC:/utils/postgresql/pgsql/lib D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt53DRender.a D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt53DInput.a D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt53DCore.a D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt5Widgets.a D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt5Gui.a D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt5SerialPort.a D:/Qt/Qt5.6.2/5.6/mingw49_32/lib/libQt5Core.a 
@@ -48,7 +48,8 @@ SOURCES       = main.cpp \
 		envelopetracker.cpp \
 		envelope.cpp \
 		manager3d.cpp \
-		window.cpp release/qrc_resources.cpp \
+		window.cpp \
+		magnetestimator.cpp release/qrc_resources.cpp \
 		release/moc_mainwindow.cpp \
 		release/moc_window.cpp
 OBJECTS       = release/main.o \
@@ -57,6 +58,7 @@ OBJECTS       = release/main.o \
 		release/envelope.o \
 		release/manager3d.o \
 		release/window.o \
+		release/magnetestimator.o \
 		release/qrc_resources.o \
 		release/moc_mainwindow.o \
 		release/moc_window.o
@@ -65,12 +67,14 @@ DIST          =  mainwindow.h \
 		envelopetracker.h \
 		envelope.h \
 		manager3d.h \
-		window.h main.cpp \
+		window.h \
+		magnetestimator.h main.cpp \
 		mainwindow.cpp \
 		envelopetracker.cpp \
 		envelope.cpp \
 		manager3d.cpp \
-		window.cpp
+		window.cpp \
+		magnetestimator.cpp
 QMAKE_TARGET  = Platform_XYZ_UI
 DESTDIR        = release/ #avoid trailing-slash linebreak
 TARGET         = Platform_XYZ_UI.exe
@@ -82,7 +86,7 @@ first: all
 all: Makefile.Release  $(DESTDIR_TARGET)
 
 $(DESTDIR_TARGET): ui_mainwindow.h $(OBJECTS) 
-	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
+	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) object_script.Platform_XYZ_UI.Release  $(LIBS)
 
 qmake: FORCE
 	@$(QMAKE) -spec win32-g++ CONFIG+=debug CONFIG+=qml_debug -o Makefile.Release Platform_XYZ_UI.pro
@@ -93,7 +97,7 @@ dist:
 	$(ZIP) Platform_XYZ_UI.zip $(SOURCES) $(DIST) Platform_XYZ_UI.pro ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/spec_pre.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/qdevice.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/device_config.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/common/angle.conf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/qconfig.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dcore.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dcore_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dinput.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dinput_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dlogic.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dlogic_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dquick.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dquick_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dquickinput.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dquickinput_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dquickrender.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3dquickrender_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3drender.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_3drender_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_axbase.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_axbase_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_axcontainer.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_axcontainer_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_axserver.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_axserver_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_bluetooth.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_bluetooth_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_bootstrap_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_clucene_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_concurrent.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_concurrent_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_core.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_core_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_dbus.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_dbus_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_designer.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_designer_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_designercomponents_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_gui.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_gui_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_help.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_help_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_labscontrols_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_labstemplates_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_location.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_location_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_multimedia.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_multimedia_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_multimediawidgets.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_multimediawidgets_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_network.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_network_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_nfc.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_nfc_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_opengl.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_opengl_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_openglextensions.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_openglextensions_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_platformsupport_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_positioning.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_positioning_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_printsupport.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_printsupport_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_qml.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_qml_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_qmldevtools_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_qmltest.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_qmltest_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_qtmultimediaquicktools_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_quick.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_quick_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_quickparticles_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_quickwidgets.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_quickwidgets_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_script.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_script_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_scripttools.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_scripttools_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_sensors.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_sensors_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_serialbus.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_serialbus_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_serialport.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_serialport_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_sql.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_sql_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_svg.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_svg_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_testlib.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_testlib_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_uiplugin.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_uitools.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_uitools_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_webchannel.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_webchannel_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_websockets.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_websockets_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_widgets.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_widgets_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_winextras.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_winextras_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_xml.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_xml_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_xmlpatterns.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/modules/qt_lib_xmlpatterns_private.pri ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/qt_functions.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/qt_config.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/win32/qt_config.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++/qmake.conf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/spec_post.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/exclusive_builds.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/default_pre.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/win32/default_pre.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/resolve_config.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/exclusive_builds_post.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/default_post.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/build_pass.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/qml_debug.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/win32/rtti.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/precompile_header.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/warn_on.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/qt.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/resources.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/moc.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/win32/opengl.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/uic.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/file_copies.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/win32/windows.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/testcase_targets.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/exceptions.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/yacc.prf ../../Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/features/lex.prf Platform_XYZ_UI.pro resources.qrc ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/qtmain.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt53DRender.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt53DInput.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt53DCore.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt5Widgets.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt5Gui.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt5SerialPort.prl ../../Qt/Qt5.6.2/5.6/mingw49_32/lib/Qt5Core.prl  NO_PCH_SOURCES RESOURCES HEADERS SOURCES OBJECTIVE_SOURCES FORMS YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) release/main.o release/mainwindow.o release/envelopetracker.o release/envelope.o release/manager3d.o release/window.o release/qrc_resources.o release/moc_mainwindow.o release/moc_window.o
+	-$(DEL_FILE) release/main.o release/mainwindow.o release/envelopetracker.o release/envelope.o release/manager3d.o release/window.o release/magnetestimator.o release/qrc_resources.o release/moc_mainwindow.o release/moc_window.o
 
 distclean: clean 
 	-$(DEL_FILE) $(DESTDIR_TARGET)
@@ -231,6 +235,236 @@ release/moc_mainwindow.cpp: manager3d.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qcolor.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qrgb.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qrgba64.h \
+		magnetestimator.h \
+		../../Program\ Files/eigen/Eigen/Dense \
+		../../Program\ Files/eigen/Eigen/Core \
+		../../Program\ Files/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Macros.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ConfigureVectorization.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/MKL_support.h \
+		../../Program\ Files/eigen/Eigen/src/misc/blas.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Meta.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/HIP/hcc/math_constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/StaticAssert.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/XprHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Memory.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IntegralConstant.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/SymbolicIndex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NumTraits.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GenericPacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctionsImpl.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/ConjHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/Half.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMathHalf.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/InteropHeaders.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/Settings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/StlFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/CUDA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IndexedViewHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReshapedHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArithmeticSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IO.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseCoeffsBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/BlockMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/IndexedViewMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ReshapedMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MatrixBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/EigenBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Product.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/AssignEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/BlasUtil.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseStorage.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NestByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ReturnByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NoAlias.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PlainObjectBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Matrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Array.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseTernaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseNullaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Dot.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StableNorm.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Stride.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MapBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Map.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Ref.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Block.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorBlock.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IndexedView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reshaped.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpose.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Diagonal.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Redux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Visitor.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Fuzzy.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Swap.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CommaInitializer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GeneralProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Solve.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Inverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolverBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PermutationMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpositions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/TriangularMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfAdjointView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/Parallelizer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ProductEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolveTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BandMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ConditionEstimator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BooleanRedux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Select.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorwiseOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PartialReduxEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Random.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Replicate.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayWrapper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StlIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign_MKL.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GlobalFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/LU \
+		../../Program\ Files/eigen/Eigen/src/misc/Kernel.h \
+		../../Program\ Files/eigen/Eigen/src/misc/Image.h \
+		../../Program\ Files/eigen/Eigen/src/LU/FullPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke_mangling.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/LU/Determinant.h \
+		../../Program\ Files/eigen/Eigen/src/LU/InverseImpl.h \
+		../../Program\ Files/eigen/Eigen/src/LU/arch/Inverse_SSE.h \
+		../../Program\ Files/eigen/Eigen/Cholesky \
+		../../Program\ Files/eigen/Eigen/Jacobi \
+		../../Program\ Files/eigen/Eigen/src/Jacobi/Jacobi.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LDLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/QR \
+		../../Program\ Files/eigen/Eigen/Householder \
+		../../Program\ Files/eigen/Eigen/src/Householder/Householder.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/HouseholderSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/BlockHouseholder.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/SVD \
+		../../Program\ Files/eigen/Eigen/src/misc/RealSvd2x2.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/SVDBase.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/BDCSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/Geometry \
+		../../Program\ Files/eigen/Eigen/src/Geometry/OrthoMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/EulerAngles.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Homogeneous.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/RotationBase.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Rotation2D.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Quaternion.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AngleAxis.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Transform.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Translation.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Scaling.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Hyperplane.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/ParametrizedLine.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AlignedBox.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Umeyama.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		../../Program\ Files/eigen/Eigen/Eigenvalues \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealQZ.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/QVector \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/QMainWindow \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/qmainwindow.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/qwidget.h \
@@ -387,7 +621,7 @@ release/moc_mainwindow.cpp: manager3d.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/QList \
 		envelope.h \
 		mainwindow.h
-	'D:\Qt\Qt5.6.2\5.6\mingw49_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++ -I'D:/Magnet localization/Platform_XYZ_UI' -I'C:/Program Files/MATLAB/R2016b/extern/include' -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DInput -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DCore -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtANGLE -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtSerialPort -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore mainwindow.h -o release/moc_mainwindow.cpp
+	'D:\Qt\Qt5.6.2\5.6\mingw49_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++ -I'D:/Magnet localization/Platform_XYZ_UI' -I'D:/Program Files/eigen' -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DInput -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DCore -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtANGLE -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtSerialPort -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore mainwindow.h -o release/moc_mainwindow.cpp
 
 release/moc_window.cpp: ../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender/QWindow \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender/qwindow.h \
@@ -482,7 +716,7 @@ release/moc_window.cpp: ../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender/QWind
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qcursor.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender/qt3drender_global.h \
 		window.h
-	'D:\Qt\Qt5.6.2\5.6\mingw49_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++ -I'D:/Magnet localization/Platform_XYZ_UI' -I'C:/Program Files/MATLAB/R2016b/extern/include' -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DInput -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DCore -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtANGLE -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtSerialPort -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore window.h -o release/moc_window.cpp
+	'D:\Qt\Qt5.6.2\5.6\mingw49_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/Qt/Qt5.6.2/5.6/mingw49_32/mkspecs/win32-g++ -I'D:/Magnet localization/Platform_XYZ_UI' -I'D:/Program Files/eigen' -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DRender -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DInput -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/Qt3DCore -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtANGLE -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtSerialPort -ID:/Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore window.h -o release/moc_window.cpp
 
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
@@ -611,6 +845,236 @@ release/main.o: main.cpp mainwindow.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qcolor.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qrgb.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qrgba64.h \
+		magnetestimator.h \
+		../../Program\ Files/eigen/Eigen/Dense \
+		../../Program\ Files/eigen/Eigen/Core \
+		../../Program\ Files/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Macros.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ConfigureVectorization.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/MKL_support.h \
+		../../Program\ Files/eigen/Eigen/src/misc/blas.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Meta.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/HIP/hcc/math_constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/StaticAssert.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/XprHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Memory.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IntegralConstant.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/SymbolicIndex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NumTraits.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GenericPacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctionsImpl.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/ConjHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/Half.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMathHalf.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/InteropHeaders.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/Settings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/StlFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/CUDA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IndexedViewHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReshapedHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArithmeticSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IO.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseCoeffsBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/BlockMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/IndexedViewMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ReshapedMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MatrixBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/EigenBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Product.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/AssignEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/BlasUtil.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseStorage.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NestByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ReturnByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NoAlias.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PlainObjectBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Matrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Array.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseTernaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseNullaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Dot.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StableNorm.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Stride.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MapBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Map.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Ref.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Block.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorBlock.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IndexedView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reshaped.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpose.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Diagonal.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Redux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Visitor.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Fuzzy.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Swap.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CommaInitializer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GeneralProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Solve.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Inverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolverBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PermutationMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpositions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/TriangularMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfAdjointView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/Parallelizer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ProductEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolveTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BandMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ConditionEstimator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BooleanRedux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Select.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorwiseOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PartialReduxEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Random.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Replicate.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayWrapper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StlIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign_MKL.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GlobalFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/LU \
+		../../Program\ Files/eigen/Eigen/src/misc/Kernel.h \
+		../../Program\ Files/eigen/Eigen/src/misc/Image.h \
+		../../Program\ Files/eigen/Eigen/src/LU/FullPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke_mangling.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/LU/Determinant.h \
+		../../Program\ Files/eigen/Eigen/src/LU/InverseImpl.h \
+		../../Program\ Files/eigen/Eigen/src/LU/arch/Inverse_SSE.h \
+		../../Program\ Files/eigen/Eigen/Cholesky \
+		../../Program\ Files/eigen/Eigen/Jacobi \
+		../../Program\ Files/eigen/Eigen/src/Jacobi/Jacobi.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LDLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/QR \
+		../../Program\ Files/eigen/Eigen/Householder \
+		../../Program\ Files/eigen/Eigen/src/Householder/Householder.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/HouseholderSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/BlockHouseholder.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/SVD \
+		../../Program\ Files/eigen/Eigen/src/misc/RealSvd2x2.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/SVDBase.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/BDCSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/Geometry \
+		../../Program\ Files/eigen/Eigen/src/Geometry/OrthoMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/EulerAngles.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Homogeneous.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/RotationBase.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Rotation2D.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Quaternion.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AngleAxis.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Transform.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Translation.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Scaling.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Hyperplane.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/ParametrizedLine.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AlignedBox.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Umeyama.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		../../Program\ Files/eigen/Eigen/Eigenvalues \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealQZ.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/QVector \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/QMainWindow \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/qmainwindow.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/qwidget.h \
@@ -943,6 +1407,236 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qcolor.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qrgb.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qrgba64.h \
+		magnetestimator.h \
+		../../Program\ Files/eigen/Eigen/Dense \
+		../../Program\ Files/eigen/Eigen/Core \
+		../../Program\ Files/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Macros.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ConfigureVectorization.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/MKL_support.h \
+		../../Program\ Files/eigen/Eigen/src/misc/blas.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Meta.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/HIP/hcc/math_constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/StaticAssert.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/XprHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Memory.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IntegralConstant.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/SymbolicIndex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NumTraits.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GenericPacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctionsImpl.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/ConjHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/Half.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMathHalf.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/InteropHeaders.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/Settings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/StlFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/CUDA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IndexedViewHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReshapedHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArithmeticSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IO.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseCoeffsBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/BlockMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/IndexedViewMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ReshapedMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MatrixBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/EigenBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Product.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/AssignEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/BlasUtil.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseStorage.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NestByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ReturnByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NoAlias.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PlainObjectBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Matrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Array.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseTernaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseNullaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Dot.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StableNorm.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Stride.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MapBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Map.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Ref.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Block.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorBlock.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IndexedView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reshaped.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpose.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Diagonal.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Redux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Visitor.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Fuzzy.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Swap.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CommaInitializer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GeneralProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Solve.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Inverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolverBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PermutationMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpositions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/TriangularMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfAdjointView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/Parallelizer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ProductEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolveTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BandMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ConditionEstimator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BooleanRedux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Select.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorwiseOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PartialReduxEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Random.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Replicate.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayWrapper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StlIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign_MKL.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GlobalFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/LU \
+		../../Program\ Files/eigen/Eigen/src/misc/Kernel.h \
+		../../Program\ Files/eigen/Eigen/src/misc/Image.h \
+		../../Program\ Files/eigen/Eigen/src/LU/FullPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke_mangling.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/LU/Determinant.h \
+		../../Program\ Files/eigen/Eigen/src/LU/InverseImpl.h \
+		../../Program\ Files/eigen/Eigen/src/LU/arch/Inverse_SSE.h \
+		../../Program\ Files/eigen/Eigen/Cholesky \
+		../../Program\ Files/eigen/Eigen/Jacobi \
+		../../Program\ Files/eigen/Eigen/src/Jacobi/Jacobi.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LDLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/QR \
+		../../Program\ Files/eigen/Eigen/Householder \
+		../../Program\ Files/eigen/Eigen/src/Householder/Householder.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/HouseholderSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/BlockHouseholder.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/SVD \
+		../../Program\ Files/eigen/Eigen/src/misc/RealSvd2x2.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/SVDBase.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/BDCSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/Geometry \
+		../../Program\ Files/eigen/Eigen/src/Geometry/OrthoMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/EulerAngles.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Homogeneous.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/RotationBase.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Rotation2D.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Quaternion.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AngleAxis.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Transform.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Translation.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Scaling.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Hyperplane.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/ParametrizedLine.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AlignedBox.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Umeyama.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		../../Program\ Files/eigen/Eigen/Eigenvalues \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealQZ.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/QVector \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/QMainWindow \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/qmainwindow.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtWidgets/qwidget.h \
@@ -1456,6 +2150,285 @@ release/window.o: window.cpp window.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qopenglext.h \
 		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtGui/qopenglversionfunctions.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/window.o window.cpp
+
+release/magnetestimator.o: magnetestimator.cpp magnetestimator.h \
+		../../Program\ Files/eigen/Eigen/Dense \
+		../../Program\ Files/eigen/Eigen/Core \
+		../../Program\ Files/eigen/Eigen/src/Core/util/DisableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Macros.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ConfigureVectorization.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/MKL_support.h \
+		../../Program\ Files/eigen/Eigen/src/misc/blas.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Meta.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/HIP/hcc/math_constants.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ForwardDeclarations.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/StaticAssert.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/XprHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/Memory.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IntegralConstant.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/SymbolicIndex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NumTraits.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GenericPacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MathFunctionsImpl.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/ConjHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX512/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AVX/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SSE/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/AltiVec/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/NEON/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/ZVector/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/MSA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/Half.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMathHalf.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/GPU/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/InteropHeaders.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/PacketMath.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/MathFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/SYCL/TypeCasting.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/Default/Settings.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/TernaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/BinaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/UnaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/NullaryFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/StlFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/functors/AssignmentFunctors.h \
+		../../Program\ Files/eigen/Eigen/src/Core/arch/CUDA/Complex.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/IndexedViewHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReshapedHelper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArithmeticSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IO.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseCoeffsBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/BlockMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/IndexedViewMethods.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ReshapedMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MatrixBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/CommonCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/MatrixCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/EigenBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Product.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/AssignEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayBase.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseUnaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/plugins/ArrayCwiseBinaryOps.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/BlasUtil.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DenseStorage.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NestByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ReturnByValue.h \
+		../../Program\ Files/eigen/Eigen/src/Core/NoAlias.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PlainObjectBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Matrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Array.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseTernaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseNullaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CwiseUnaryView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfCwiseBinaryOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Dot.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StableNorm.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Stride.h \
+		../../Program\ Files/eigen/Eigen/src/Core/MapBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Map.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Ref.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Block.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorBlock.h \
+		../../Program\ Files/eigen/Eigen/src/Core/IndexedView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reshaped.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpose.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Diagonal.h \
+		../../Program\ Files/eigen/Eigen/src/Core/DiagonalProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Redux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Visitor.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Fuzzy.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Swap.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CommaInitializer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GeneralProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Solve.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Inverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolverBase.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PermutationMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Transpositions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/TriangularMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SelfAdjointView.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralBlockPanelKernel.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/Parallelizer.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ProductEvaluators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/SolveTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointProduct.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointRank2Update.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverVector.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BandMatrix.h \
+		../../Program\ Files/eigen/Eigen/src/Core/CoreIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ConditionEstimator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/BooleanRedux.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Select.h \
+		../../Program\ Files/eigen/Eigen/src/Core/VectorwiseOp.h \
+		../../Program\ Files/eigen/Eigen/src/Core/PartialReduxEvaluator.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Random.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Replicate.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Reverse.h \
+		../../Program\ Files/eigen/Eigen/src/Core/ArrayWrapper.h \
+		../../Program\ Files/eigen/Eigen/src/Core/StlIterators.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/GeneralMatrixMatrixTriangular_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/SelfadjointMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularMatrixVector_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/products/TriangularSolverMatrix_BLAS.h \
+		../../Program\ Files/eigen/Eigen/src/Core/Assign_MKL.h \
+		../../Program\ Files/eigen/Eigen/src/Core/GlobalFunctions.h \
+		../../Program\ Files/eigen/Eigen/src/Core/util/ReenableStupidWarnings.h \
+		../../Program\ Files/eigen/Eigen/LU \
+		../../Program\ Files/eigen/Eigen/src/misc/Kernel.h \
+		../../Program\ Files/eigen/Eigen/src/misc/Image.h \
+		../../Program\ Files/eigen/Eigen/src/LU/FullPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke.h \
+		../../Program\ Files/eigen/Eigen/src/misc/lapacke_mangling.h \
+		../../Program\ Files/eigen/Eigen/src/LU/PartialPivLU_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/LU/Determinant.h \
+		../../Program\ Files/eigen/Eigen/src/LU/InverseImpl.h \
+		../../Program\ Files/eigen/Eigen/src/LU/arch/Inverse_SSE.h \
+		../../Program\ Files/eigen/Eigen/Cholesky \
+		../../Program\ Files/eigen/Eigen/Jacobi \
+		../../Program\ Files/eigen/Eigen/src/Jacobi/Jacobi.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LDLT.h \
+		../../Program\ Files/eigen/Eigen/src/Cholesky/LLT_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/QR \
+		../../Program\ Files/eigen/Eigen/Householder \
+		../../Program\ Files/eigen/Eigen/src/Householder/Householder.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/HouseholderSequence.h \
+		../../Program\ Files/eigen/Eigen/src/Householder/BlockHouseholder.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/FullPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR.h \
+		../../Program\ Files/eigen/Eigen/src/QR/CompleteOrthogonalDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/QR/HouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/QR/ColPivHouseholderQR_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/SVD \
+		../../Program\ Files/eigen/Eigen/src/misc/RealSvd2x2.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/UpperBidiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/SVDBase.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/BDCSVD.h \
+		../../Program\ Files/eigen/Eigen/src/SVD/JacobiSVD_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/Geometry \
+		../../Program\ Files/eigen/Eigen/src/Geometry/OrthoMethods.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/EulerAngles.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Homogeneous.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/RotationBase.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Rotation2D.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Quaternion.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AngleAxis.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Transform.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Translation.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Scaling.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Hyperplane.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/ParametrizedLine.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/AlignedBox.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/Umeyama.h \
+		../../Program\ Files/eigen/Eigen/src/Geometry/arch/Geometry_SSE.h \
+		../../Program\ Files/eigen/Eigen/Eigenvalues \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/Tridiagonalization.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/HessenbergDecomposition.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/EigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedSelfAdjointEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealQZ.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/RealSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/ComplexSchur_LAPACKE.h \
+		../../Program\ Files/eigen/Eigen/src/Eigenvalues/SelfAdjointEigenSolver_LAPACKE.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/QVector \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qvector.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qalgorithms.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qglobal.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qconfig.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qfeatures.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qsystemdetection.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qprocessordetection.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qcompilerdetection.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qtypeinfo.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qtypetraits.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qisenum.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qsysinfo.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qlogging.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qflags.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qbasicatomic.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_bootstrap.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qgenericatomic.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_cxx11.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_gcc.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_msvc.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_armv7.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_armv6.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_armv5.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_ia64.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_x86.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qatomic_unix.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qglobalstatic.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qmutex.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qnumeric.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qversiontagging.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qiterator.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qlist.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qrefcount.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qarraydata.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qhashfunctions.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qchar.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qpair.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qbytearraylist.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qbytearray.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qnamespace.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qstring.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qstringbuilder.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qstringlist.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qregexp.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qstringmatcher.h \
+		../../Qt/Qt5.6.2/5.6/mingw49_32/include/QtCore/qpoint.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/magnetestimator.o magnetestimator.cpp
 
 release/qrc_resources.o: release/qrc_resources.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release/qrc_resources.o release/qrc_resources.cpp

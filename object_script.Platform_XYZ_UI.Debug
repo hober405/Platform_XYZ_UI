@@ -1,0 +1,12 @@
+INPUT(
+./debug/main.o
+./debug/mainwindow.o
+./debug/envelopetracker.o
+./debug/envelope.o
+./debug/manager3d.o
+./debug/window.o
+./debug/magnetestimator.o
+./debug/qrc_resources.o
+./debug/moc_mainwindow.o
+./debug/moc_window.o
+);

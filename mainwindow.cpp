@@ -1,7 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "engine.h"
-#include "matrix.h"
 
 #include <windows.h>
 #include <QMessageBox>
@@ -11,7 +9,8 @@
 MainWindow::MainWindow(Qt3DCore::QEntity *rootEntity, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    magSelection(0x00)
+    magSelection(0x00),
+    estimater(8)
 {
     ui->setupUi(this);
     serial = new QSerialPort(this);
@@ -33,7 +32,9 @@ MainWindow::MainWindow(Qt3DCore::QEntity *rootEntity, QWidget *parent) :
     for (const QSerialPortInfo &info : infos) {
         ui->comboBoxComPort->addItem(info.portName());
     }
-
+    estimater.inititialize();
+    float data[8][3] = {{1,2,3},{2,3,4},{3,4,5},{3,4,2},{1,1,1},{1,1,1},{1,1,2},{3,3,3}};
+    estimater.setData(data);
 }
 
 void MainWindow::addContainer(QWidget *container)
@@ -108,11 +109,16 @@ void MainWindow::readData()
             QString magIndex = "0";
             if(cmd=='M')
             {
-                float xMod = x/6842.0f-(0.6545-0.1578)/2;
-                float yMod = y/6842.0f-(-0.0938-0.9506)/2;
-                float zMod = z/6842.0f-(0.8679+0.0968)/2;
+                float xMod = x/6842.0f;
+                float yMod = y/6842.0f;
+                float zMod = z/6842.0f;
                 manager->setDirection(xMod,yMod,zMod);
-                magIndex = QString::number((uint8_t)((dataArray[0]>>5)&0x07)+1);
+                int magNum = (uint8_t)((dataArray[0]>>5)&0x07);
+                magData[magNum][0] = xMod;
+                magData[magNum][1] = yMod;
+                magData[magNum][2] = zMod;
+
+                magIndex = QString::number(magNum+1);
                 if(!record&&!isPatternRecord&&magIndex=="1"){
                     sendData("O",1);
                 }
