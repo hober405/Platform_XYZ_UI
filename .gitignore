@@ -2,6 +2,7 @@ log
 debug
 release
 build-Platform_XYZ_UI-Desktop_Qt_5_6_2_MinGW_32bit-Debug
+.gitignore
 *.pro.user
 Platform_XYZ_UI.pro.user
 *.user
