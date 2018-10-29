@@ -28,21 +28,14 @@ void MagnetEstimator::inititialize()
     {
         rotMat.push_back(rot*rotMat[i-1]);
         pos.push_back(rot*pos[i-1]);
-//        std::cout<<rotMat[i]<<"\n";
-//        std::cout<<pos[i]<<"\n";
+        std::cout<<rotMat[i]<<"\n";
+        std::cout<<pos[i]<<"\n";
     }
 }
 
 void MagnetEstimator::setData(float data[][3])
 {
-    float *d = new float [numberOfSensor*3];
-    for(int i = 0; i < numberOfSensor; i++)
-    {
-        d[i*3] = data[i][0];
-        d[i*3+1] = data[i][1];
-        d[i*3+2] = data[i][2];
-    }
-    Map<MatrixXf> magneticData(d,3,numberOfSensor);
+    Map<MatrixXf> magneticData((float *)data,3,numberOfSensor);
 //    std::cout << magneticData << "\n";
 }
 

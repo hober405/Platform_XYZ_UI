@@ -2,8 +2,8 @@ clc;clear;close all;
 % 364.35 mGauss ?????
 
 %% for calibration
-% cal = 1;
-% filname = 'pololu5mag_cal_earth.log';  savename = [dir '/pololu_y_axis_magnet.mat'];
+cal = 1;
+filename = 'pololu5mag_cal_earth_1.log';  savename = ['tmp.mat'];
 
 
 %% for evaluation
@@ -13,16 +13,16 @@ N = 1;
 S = 1000;
 E = 0;
 fs = 1000;
-dir = 'pos_153_228_30';
+% dir = 'pos_153_228_30';
 % dir = 'pos_173_228_40';
 % dir = 'pos_113_168_0';
-cal = 0;
-filname = [dir '\pololu5mag_x_axis_magnet.log'];  savename = [dir '/pololu_x_axis_magnet.mat'];
-% filname = [dir '\pololu5mag_y_axis_magnet.log'];  savename = [dir '/pololu_y_axis_magnet.mat'];
-% filname = [dir '\pololu5mag_z_axis_magnet.log'];  savename = [dir '/pololu_z_axis_magnet.mat'];
-fileID = fopen(filname,'r');
+% cal = 0;
+% filename = [dir '\pololu5mag_x_axis_magnet.log'];  savename = [dir '/pololu_x_axis_magnet.mat'];
+% filename = [dir '\pololu5mag_y_axis_magnet.log'];  savename = [dir '/pololu_y_axis_magnet.mat'];
+% filename = [dir '\pololu5mag_z_axis_magnet.log'];  savename = [dir '/pololu_z_axis_magnet.mat'];
 formatSpec = '%s %d %d %d %d:%d:%d\r\n';
 sizeData = [8 Inf];
+fileID = fopen(filename,'r');
 data = fscanf(fileID, formatSpec, sizeData);
 fclose(fileID);
 data = data';
@@ -34,10 +34,16 @@ rot = zeros(3,3,5);
 data(:,3:5) = data(:,3:5)./6842.0;
 if cal==1
     for magneto=1:5
-        [r_data, c_data] = find(data(:,1)==magneto);
+        [r_data, c_data] = find(data(:,2)==magneto);
         % data(r_data,:) = [];
         raw_data = data(r_data(N:end-E),3:5);
-        raw_data = (1-alpha)*raw_data(1:end-1,:)+alpha*raw_data(2,end,:);
+        figure
+        plot3(raw_data(:,1),raw_data(:,2),raw_data(:,3)); hold on
+        axis equal
+        axis([-1.2,1.2,-1.2,1.2,-1.2,1.2])
+        grid on
+        title('visualize raw')
+%         raw_data = (1-alpha)*raw_data(1:end-1,:)+alpha*raw_data(2:end,:);
         L = size(raw_data,1);
         [U(:,:,magneto),c(:,magneto)]=MgnCalibration(raw_data);
         % max_data = max(raw_data(:,2:4));
@@ -45,10 +51,6 @@ if cal==1
         % scale_data = max_data-min_data;
         raw_data = (U(:,:,magneto)*(raw_data'-repmat(c(:,magneto),1,L)))';
         mag_data{magneto} = raw_data';
-        figure(104)
-        scatter3(raw_data(:,1),raw_data(:,2),raw_data(:,3),'.'); hold on
-        axis equal
-        title('visualize raw')
         % vec_length = sum(raw_data'.^2).^0.5;
         % figure
         % plot((1:size(raw_data,1))/fs,vec_length)
@@ -98,9 +100,11 @@ if cal==1
         rot(:,:,magneto) = rot(:,:,magneto).*sign(diag(R(:,:,magneto)));
         rot_inv = rot(:,:,magneto)^-1;
         mag = rot(:,:,magneto)*mag_data{magneto};
-        figure(105)
-        scatter3(mag(1,:),mag(2,:),mag(3,:),'.'); hold on
+        figure
+        plot3(mag(1,:),mag(2,:),mag(3,:)); hold on
         axis equal
+        axis([-1.2,1.2,-1.2,1.2,-1.2,1.2])
+        grid on
         title('visualize rot')
         
         figure(106)
