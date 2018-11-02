@@ -9,15 +9,18 @@ class MagnetEstimator
 public:
     MagnetEstimator(int n);
     void inititialize();
-    void setData(float data[][3]);
-    void estimate();
+    void setData(double *data);
+    bool estimate();
+    Vector3d getMagnetPosition() const;
+    Vector3d getMagnetDirection() const;
+
 private:
     int numberOfSensor;
-    QVector<Matrix3f> rotMat;
-    QVector<Vector3f> pos;
-    MatrixXf magneticData;
-    Vector3f magnetPosition;
-    Vector3f magnetDirection;
+    QVector<Matrix3d> rotMat;
+    MatrixXd pos;
+    MatrixXd magneticData;
+    Vector3d magnetPosition;
+    Vector3d magnetDirection;
 };
 
 #endif // MAGNETESTIMATOR_H

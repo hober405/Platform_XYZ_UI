@@ -18,14 +18,16 @@ SOURCES += main.cpp\
     envelope.cpp \
     manager3d.cpp \
     window.cpp \
-    magnetestimator.cpp
+    magnetestimator.cpp \
+    magneticstructdata.cpp
 
 HEADERS  += mainwindow.h \
     envelopetracker.h \
     envelope.h \
     manager3d.h \
     window.h \
-    magnetestimator.h
+    magnetestimator.h \
+    magneticstructdata.h
 
 FORMS    += mainwindow.ui
 

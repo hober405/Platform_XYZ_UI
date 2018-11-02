@@ -10,7 +10,8 @@ MainWindow::MainWindow(Qt3DCore::QEntity *rootEntity, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     magSelection(0x00),
-    estimater(8)
+    estimater(8),
+    magData(8)
 {
     ui->setupUi(this);
     serial = new QSerialPort(this);
@@ -24,7 +25,6 @@ MainWindow::MainWindow(Qt3DCore::QEntity *rootEntity, QWidget *parent) :
     fileName += QDate::currentDate().toString()+".log";
     file = new QFile(fileName);
     qDebug()<<fileName<<endl;
-    //    system("cd\n");
     record_data.reserve(list_max);
     manager = new Manager3D(rootEntity);
     isPatternRecord = false;
@@ -33,8 +33,18 @@ MainWindow::MainWindow(Qt3DCore::QEntity *rootEntity, QWidget *parent) :
         ui->comboBoxComPort->addItem(info.portName());
     }
     estimater.inititialize();
-    float data[8][3] = {{1,2,3},{2,3,4},{3,4,5},{3,4,2},{1,1,1},{1,1,1},{1,1,2},{3,3,3}};
-    estimater.setData(data);
+    double data[8][3] = {
+        {0,	-0.487869044139141,	-1.26059631686641},
+        {-0.285004384682841,	-0.204326220403391,	-0.990353697749197},
+        {-0.183864367144110,	0.0368313358667054,	-0.625255773165741},
+        {-0.0716164864074833,	0.0919321835720544,	-0.439929845074540},
+        {0,	0.0983630517392573,	-0.388336743642210},
+        {0.0716164864074829,	0.0919321835720544,	-0.439929845074540},
+        {0.183864367144110,	0.0368313358667054,	-0.625255773165741},
+        {0.285004384682841,	-0.204326220403391,	-0.990353697749197}
+    };
+    estimater.setData((double *)data);
+    estimater.estimate();
 }
 
 void MainWindow::addContainer(QWidget *container)
@@ -109,14 +119,28 @@ void MainWindow::readData()
             QString magIndex = "0";
             if(cmd=='M')
             {
-                float xMod = x/6842.0f;
-                float yMod = y/6842.0f;
-                float zMod = z/6842.0f;
+                double xMod = x/6842.0;
+                double yMod = y/6842.0;
+                double zMod = z/6842.0;
                 manager->setDirection(xMod,yMod,zMod);
                 int magNum = (uint8_t)((dataArray[0]>>5)&0x07);
-                magData[magNum][0] = xMod;
-                magData[magNum][1] = yMod;
-                magData[magNum][2] = zMod;
+                double data[] = {xMod,yMod,zMod};
+                if(magData.input(data, magNum))
+                {
+                    estimater.setData((double *)magData.data());
+                    if(estimater.estimate())
+                    {
+                        Vector3d pos = estimater.getMagnetPosition();
+                        Vector3d dir = estimater.getMagnetDirection();
+                        QString pd = "pos = (" + QString::number(pos[0]) + ", " + QString::number(pos[1]) + ", " + QString::number(pos[2]) +
+                                "),  dir = ("  + QString::number(dir[0]) + ", " + QString::number(dir[1]) + ", " + QString::number(dir[2])
+                                + ")";
+                        statusBar()->showMessage(pd);
+                    }
+                }
+//                magData[magNum][0] = xMod;
+//                magData[magNum][1] = yMod;
+//                magData[magNum][2] = zMod;
 
                 magIndex = QString::number(magNum+1);
                 if(!record&&!isPatternRecord&&magIndex=="1"){

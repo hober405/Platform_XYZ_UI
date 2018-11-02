@@ -3,6 +3,7 @@
 
 #include "manager3d.h"
 #include "magnetestimator.h"
+#include "magneticstructdata.h"
 #include <QMainWindow>
 #include <QtSerialPort/QtSerialPort>
 #include <QKeyEvent>
@@ -124,7 +125,7 @@ private:
 
     char magSelection;
     MagnetEstimator estimater;
-    float magData[8][3];
+    MagneticStructData magData;
 };
 
 #endif // MAINWINDOW_H
