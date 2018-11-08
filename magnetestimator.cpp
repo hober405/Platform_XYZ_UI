@@ -44,7 +44,7 @@ bool MagnetEstimator::estimate()
 {
     if(magneticData.cwiseAbs().mean() < 1e-2)
     {
-        qDebug()<<"data too small";
+//        qDebug()<<"data too small";
         return false;
     }
     MatrixXd tmp = magneticData;
@@ -158,8 +158,8 @@ bool MagnetEstimator::estimate()
     error.minCoeff(&matRow, &matCol);
     magnetPosition = O_B.col(matRow);
     magnetDirection *= (Bt[matRow] > 0? 1:-1);
-    std::cout << "magnetPosition\n" << magnetPosition << "\n";
-    std::cout << "magnetDirection\n" << magnetDirection << "\n";
+//    std::cout << "magnetPosition\n" << magnetPosition << "\n";
+//    std::cout << "magnetDirection\n" << magnetDirection << "\n";
     return true;
 }
 

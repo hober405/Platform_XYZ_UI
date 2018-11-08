@@ -92,6 +92,33 @@ void MainWindow::on_actionDisconnect_triggered()
     ui->actionDisconnect->setEnabled(false);
     //    ui->actionConfigure->setEnabled(true);
     ui->statusBar->showMessage(tr("Disconnected"));
+    QString fileName = QFileDialog::getSaveFileName(this, "save pos and dir...","",tr("Text files. (*.txt)"));
+    if(fileName == "") return;
+    QFile textFile(fileName);
+   if(textFile.open(QIODevice::WriteOnly|QIODevice::Text))
+   {
+       textStream.setDevice(&textFile);
+       textStream.setCodec("UTF-8");
+       textStream << "position:\n";
+       QString text;
+       for(int i = 0; i < positionHistory.size(); i++)
+       {
+           text = QString::number(positionHistory[i][0]) + " " +
+                  QString::number(positionHistory[i][1]) + " " +
+                  QString::number(positionHistory[i][2]) + "\n";
+           textStream << text;
+       }
+       positionHistory.clear();
+       textStream << "direction:\n";
+       for(int i = 0; i < directionHistory.size(); i++)
+       {
+           text = QString::number(directionHistory[i][0]) + " " +
+                  QString::number(directionHistory[i][1]) + " " +
+                  QString::number(directionHistory[i][2]) + "\n";
+           textStream << text;
+       }
+       directionHistory.clear();
+   }
 }
 
 void MainWindow::readData()
@@ -112,9 +139,9 @@ void MainWindow::readData()
         if(!record&&!isPatternRecord) qDebug()<<"parse command:"<<dataArray;
         if(cmd=='M'||cmd=='O')
         {
-            int x=((dataArray[1]<<8)+(int)(dataArray[2]&0xFF));
-            int y=((dataArray[3]<<8)+(int)(dataArray[4]&0xFF));
-            int z=((dataArray[5]<<8)+(int)(dataArray[6]&0xFF));
+            int x=((dataArray[1]<<8)+int(dataArray[2]&0xFF));
+            int y=((dataArray[3]<<8)+int(dataArray[4]&0xFF));
+            int z=((dataArray[5]<<8)+int(dataArray[6]&0xFF));
 
             QString magIndex = "0";
             if(cmd=='M')
@@ -123,19 +150,22 @@ void MainWindow::readData()
                 double yMod = y/6842.0;
                 double zMod = z/6842.0;
                 manager->setDirection(xMod,yMod,zMod);
-                int magNum = (uint8_t)((dataArray[0]>>5)&0x07);
+                int magNum = uint8_t((dataArray[0]>>5)&0x07);
                 double data[] = {xMod,yMod,zMod};
                 if(magData.input(data, magNum))
                 {
                     estimater.setData((double *)magData.data());
+                    ui->statusBar->showMessage("data...");
                     if(estimater.estimate())
                     {
                         Vector3d pos = estimater.getMagnetPosition();
                         Vector3d dir = estimater.getMagnetDirection();
+                        positionHistory.push_back(pos);
+                        directionHistory.push_back(dir);
                         QString pd = "pos = (" + QString::number(pos[0]) + ", " + QString::number(pos[1]) + ", " + QString::number(pos[2]) +
                                 "),  dir = ("  + QString::number(dir[0]) + ", " + QString::number(dir[1]) + ", " + QString::number(dir[2])
                                 + ")";
-                        statusBar()->showMessage(pd);
+                        ui->statusBar->showMessage(pd);
                     }
                 }
 //                magData[magNum][0] = xMod;

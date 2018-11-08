@@ -13,6 +13,10 @@ private:
     MagneticStructData& operator=(MagneticStructData& mag){}
     int _numberOfSensor;
     double *_data;
+    double **_history;
+    int _historyIndex;
+    double *_calibrateData;
+    double *_outputData;
     unsigned char *_updatedData;
 };
 

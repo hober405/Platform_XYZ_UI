@@ -126,6 +126,8 @@ private:
     char magSelection;
     MagnetEstimator estimater;
     MagneticStructData magData;
+    QVector<Vector3d> positionHistory;
+    QVector<Vector3d> directionHistory;
 };
 
 #endif // MAINWINDOW_H
