@@ -14,13 +14,16 @@ public:
     Vector3d getMagnetPosition() const;
     Vector3d getMagnetDirection() const;
 
+
+    void setRotMat(double *rotMat);
+
 private:
-    int numberOfSensor;
-    QVector<Matrix3d> rotMat;
-    MatrixXd pos;
-    MatrixXd magneticData;
-    Vector3d magnetPosition;
-    Vector3d magnetDirection;
+    int _numberOfSensor;
+    QVector<Matrix3d> _rotMat;
+    MatrixXd _pos;
+    MatrixXd _magneticData;
+    Vector3d _magnetPosition;
+    Vector3d _magnetDirection;
 };
 
 #endif // MAGNETESTIMATOR_H

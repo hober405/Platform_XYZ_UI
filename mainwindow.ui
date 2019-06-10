@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>971</width>
-    <height>725</height>
+    <height>767</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,7 +31,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Test</string>
+     <string>Pattern Record</string>
     </property>
    </widget>
    <widget class="QWidget" name="layoutWidget">
@@ -201,8 +201,8 @@ background-repeat:none;
        <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
-          <x>11</x>
-          <y>14</y>
+          <x>10</x>
+          <y>30</y>
           <width>181</width>
           <height>151</height>
          </rect>
@@ -341,9 +341,9 @@ background-repeat:none;
          <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>10</y>
-            <width>181</width>
+            <x>0</x>
+            <y>20</y>
+            <width>196</width>
             <height>68</height>
            </rect>
           </property>
@@ -409,6 +409,12 @@ background-repeat:none;
            </item>
            <item>
             <widget class="QPushButton" name="pushButtonRecord">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="text">
               <string>record</string>
              </property>
@@ -456,8 +462,8 @@ background-repeat:none;
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>610</y>
+      <x>510</x>
+      <y>590</y>
       <width>47</width>
       <height>12</height>
      </rect>
@@ -466,17 +472,134 @@ background-repeat:none;
      <string>Com port:</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="comboBoxComPort">
+   <widget class="QComboBox" name="comboBoxComPortMotor">
     <property name="geometry">
      <rect>
-      <x>490</x>
-      <y>610</y>
+      <x>570</x>
+      <y>590</y>
       <width>69</width>
       <height>22</height>
      </rect>
     </property>
     <property name="editable">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditBaudMotor">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>590</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>921600</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>590</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Baud:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>590</y>
+      <width>47</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Motor:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_8">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>620</y>
+      <width>47</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Sensor:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_9">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>620</y>
+      <width>47</width>
+      <height>12</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Com port:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBoxComPortSensor">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>620</y>
+      <width>69</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="editable">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditBaudSensor">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>620</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>115200</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>670</x>
+      <y>620</y>
+      <width>41</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Baud:</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>640</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>calibrate</string>
     </property>
    </widget>
   </widget>
@@ -498,6 +621,7 @@ background-repeat:none;
     <addaction name="separator"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionload_calibration_file"/>
    </widget>
    <widget class="QMenu" name="menuMagnetometer">
     <property name="title">
@@ -676,6 +800,11 @@ background-repeat:none;
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionload_calibration_file">
+   <property name="text">
+    <string>load calibration file</string>
    </property>
   </action>
  </widget>

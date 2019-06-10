@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     manager3d.cpp \
     window.cpp \
     magnetestimator.cpp \
-    magneticstructdata.cpp
+    magneticdatapreprocessor.cpp \
+    mgncalibration.cpp
 
 HEADERS  += mainwindow.h \
     envelopetracker.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     manager3d.h \
     window.h \
     magnetestimator.h \
-    magneticstructdata.h
+    magneticdatapreprocessor.h \
+    mgncalibration.h
 
 FORMS    += mainwindow.ui
 

@@ -3,7 +3,7 @@
 
 #include "manager3d.h"
 #include "magnetestimator.h"
-#include "magneticstructdata.h"
+#include "magneticdatapreprocessor.h"
 #include <QMainWindow>
 #include <QtSerialPort/QtSerialPort>
 #include <QKeyEvent>
@@ -67,8 +67,7 @@ private slots:
     void on_actionOpen_triggered();
 
     void on_actionSave_triggered();
-//    void checkAndResend();
-private slots:
+
     void echo_mag();
 
     void on_pushButtonReset_clicked();
@@ -93,6 +92,12 @@ private slots:
 
     void on_actionReset_triggered();
 
+    void on_actionload_calibration_file_triggered();
+
+    void on_comboBoxComPort_editTextChanged(const QString &arg1);
+
+    void on_pushButton_clicked();
+
 protected:
     void keyPressEvent(QKeyEvent *event);
 
@@ -106,28 +111,30 @@ private:
     void stopPatternRecord();
 
     Ui::MainWindow *ui;
-    QSerialPort *serial;
-    EnvelopeTracker tracker;
-    Envelope en;
-    QFile* file;
-    QTextStream textStream;
-    bool record = false;
-    QList<QString> record_data;
-    int list_max = 1000;
-    int list_index = 0;
-    QMutex mutex;
-    Manager3D* manager;
-    int position[3];
-    int xStart, xEnd, xStep, yStart, yEnd, yStep, zStart, zEnd, zStep, num;
-    bool isPatternRecord;
-    int count;
-    bool isNext;
+    QSerialPort *_serialMotor;
+    QSerialPort *_serialSensor;
+    EnvelopeTracker _tracker;
+    Envelope _en;
+    QFile* _file;
+    QTextStream _textStream;
+    bool _record = false;
+    QList<QString> _recordData;
+    int _listMax = 1000;
+    int _listIndex = 0;
+//    QMutex mutex;
+    Manager3D* _manager;
+    int _position[3];
+    int _xStart, _xEnd, _xStep, _yStart, _yEnd, _yStep, _zStart, _zEnd, _zStep, _num;
+    bool _isPatternRecord;
+    int _count;
+    bool _isNext;
 
-    char magSelection;
-    MagnetEstimator estimater;
-    MagneticStructData magData;
-    QVector<Vector3d> positionHistory;
-    QVector<Vector3d> directionHistory;
+    char _magSelection;
+    MagnetEstimator _estimater;
+    MagneticDataPreprocessor _magDataPreprocessor;
+    QVector<Vector3d> _positionHistory;
+    QVector<Vector3d> _directionHistory;
+    bool _isShowMag;
 };
 
 #endif // MAINWINDOW_H
