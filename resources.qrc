@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>arrows/backward.png</file>
+        <file>arrows/down.png</file>
+        <file alias="pic/en.high-perf_nucleo-144_mbed.png">arrows/en.high-perf_nucleo-144_mbed.png</file>
+        <file>arrows/forward.png</file>
+        <file>arrows/left.png</file>
+        <file>arrows/right.png</file>
+        <file>arrows/up.png</file>
+    </qresource>
+</RCC>
